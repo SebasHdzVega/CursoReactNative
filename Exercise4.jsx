@@ -1,12 +1,10 @@
 import React from "react";
-import { Text, SafeAreaView, StyleSheet, View, ScrollView, TextInput } from 'react-native';
-import { FlatList } from 'react-native';
+import { Text, SafeAreaView, StyleSheet, View, ScrollView, TextInput, Button, TouchableOpacity, FlatList } from 'react-native';
 
-/*----------Example 1----------*/
 const contacts = [
   {id: 1, name:'James Elsher', phone:'123'},
   {id: 2, name:'Mary Solace', phone:'123'},
-  {id: 3, name:'MichaelLevine', phone:'123'},
+  {id: 3, name:'Michael Levine', phone:'123'},
   {id: 4, name:'Patricia Elsher', phone:'123'},
   {id: 5, name:'John Solace', phone:'123'},
   {id: 6, name:'Jennifer Thatcher', phone:'123'},
@@ -36,6 +34,7 @@ const contacts = [
   {id: 30, name:'David Solace', phone:'123'},
 ]
 
+/*----------Example 1----------*/
 class App extends React.Component {
   state = {
     search: '',
@@ -76,6 +75,7 @@ class App extends React.Component {
 class App2 extends React.Component {
   state = {
     search: '',
+    contacts: [...contacts],
   };
 
   filterList = (contacts) => {
@@ -90,7 +90,7 @@ class App2 extends React.Component {
           <TextInput 
             placeholder='Search' 
             style={styles.filter}
-            onChangeText={(search) => this.set({search})}
+            onChangeText={(search) => this.setState({search})}
           >
           </TextInput>
         </View>
@@ -113,7 +113,59 @@ class App2 extends React.Component {
 }
 /*-----------------------------*/
 
-export {App, App2};
+/*----------Example 3----------*/
+class App3 extends React.Component {
+  state = {
+    search: '',
+    contacts: [...contacts],
+  };
+
+  filterList = (contacts) => {
+    return contacts.filter(({ name }) => name.toLowerCase().includes(this.state.search.toLowerCase()));
+  }
+
+  deleteContact = (id) => {
+    const filteredList = this.state.contacts.filter(item => item.id !== id);
+    this.setState({ contacts: filteredList });
+  }
+  
+  render () {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.topper}>
+          <Text style={styles.titleText}>Contacts</Text>
+          <TextInput 
+            placeholder='Search' 
+            style={styles.filter}
+            onChangeText={(search) => this.setState({search})}
+          >
+          </TextInput>
+        </View>
+        <View style={styles.listContacts}>
+          <ScrollView>
+            <FlatList
+              data={this.filterList(this.state.contacts)}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.row}>
+                  <Text style={styles.contactName}>
+                    - {item.name}
+                  </Text>
+                  <TouchableOpacity>
+                    <Button title='x' color='red' onPress={() => this.deleteContact(item.id)}/>
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
+  }
+}
+/*-----------------------------*/
+
+export {App, App2, App3};
 
 const styles = StyleSheet.create({
   container: {
@@ -133,7 +185,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   listContacts: {
-    marginLeft: '1%',
     top: '1%',
   },
   titleText: {
@@ -143,14 +194,21 @@ const styles = StyleSheet.create({
   },
   row: {
     padding: 10,
-    fontSize: 20,
-    borderBottomWidth: 1,   
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   filter: {
     backgroundColor: 'white',
     borderRadius: 5,
     flex: 1,
-    marginLeft: '10%',
+    marginLeft: '6%',
+    marginRight: '1%',
     padding: 5,
+    marginTop: '2%',
+    marginBottom: '2%',
+  },
+  contactName: {
+    fontSize: 20,
   }
 });
